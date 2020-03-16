@@ -3,8 +3,6 @@ import tkinter
 from tkinter.ttk import *
 from tkinter import *
 from tkinter import messagebox
-from tkinter.messagebox import showinfo
-from tkinter.messagebox import showerror
 import csv,os
 import pandas as pd
 import numpy as np
@@ -19,7 +17,6 @@ class screen():
     def __init__(self):
         self.ams=tkinter.Tk()
         self.ams.title("Attendence Management System")
-        #self.ams.iconbitmap(r'SIS.ico')         #LOGO
 
         #Frame:
         self.frame=Frame(self.ams,bg='dark turquoise',width=1600,height=150)
