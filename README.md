@@ -17,3 +17,5 @@ This project is on facial recognition based Attendance Management System using o
 
 - Haar Cascade
 - LBPH (Local Binary Pattern Histogram)
+
+***Note*** - Attendance will save in both database and cvs file.
