@@ -1,0 +1,5 @@
+Python==3.6.6
+OpenCV==4.2.0
+numpy==1.18.1
+pymysql==0.9.3
+csv==1.0
