@@ -3,6 +3,8 @@ import tkinter
 from tkinter.ttk import *
 from tkinter import *
 from tkinter import messagebox
+from tkinter.messagebox import showinfo
+from tkinter.messagebox import showerror
 import csv,os
 import pandas as pd
 import numpy as np
@@ -11,12 +13,15 @@ from os import listdir
 from os.path import isfile,join
 import datetime
 import time
+import pymysql
 from datetime import date
 
 class screen():
+    nm = ''
     def __init__(self):
         self.ams=tkinter.Tk()
         self.ams.title("Attendence Management System")
+        #self.ams.iconbitmap(r'SIS.ico')         #LOGO
 
         #Frame:
         self.frame=Frame(self.ams,bg='dark turquoise',width=1600,height=150)
@@ -153,7 +158,7 @@ class screen():
             #display notification 
             self.result = "Images Saved for ID : " + self.Id +" Name : "+ self.name
             self.row = [self.Id , self.name]
-            
+
             #open a csv file in append mode
             with open('CSV\SaveDetails.csv','a+') as self.csvFile:
                 self.w = csv.writer(self.csvFile)
@@ -161,6 +166,17 @@ class screen():
             
             #close cvs file
             self.csvFile.close()
+
+            #save details in database
+            self.db = pymysql.connect("localhost","root","root","ams")
+            self.cur = self.db.cursor()
+            self.st="insert into savedetails (Id,Name)values('%s','%s')"%(self.Id,self.name)
+            self.cur.execute(self.st)
+            self.db.commit()
+
+            #close database
+            self.db.close()
+            
             self.NOTI_Entry.configure(text = self.result)
         else:
             #check if id field is numeric or not
@@ -263,7 +279,7 @@ class screen():
 
                 #predict the model
                 self.Id, self.conf = self.r.predict(self.gray[y:y+h,x:x+w])
-
+                
                 #if confidence value smaller than 50% then face matches                        
                 if(self.conf < 50):
                     self.t = datetime.datetime.now()
@@ -271,6 +287,19 @@ class screen():
                     self.timeStamp = self.t.strftime("%X")
                     #getting the name
                     self.aa = self.df.loc[self.df['Id'] == self.Id]['Name'].values
+
+                    #fetching name from database using id
+                    self.db=pymysql.connect("localhost","root","root","ams")
+                    self.cur=self.db.cursor()
+                    self.st="select * from savedetails where Id='%s'"%(str(self.Id))
+                    self.cur.execute(self.st)
+                    self.data=self.cur.fetchall()
+                    for self.r1 in self.data:
+                        self.nm = (str(self.r1[1]))
+
+                    #close database
+                    self.db.close()
+                   
                     #getting the id with name
                     self.tt = str(self.Id) + "-" + self.aa
                     #return id, name, date, time
@@ -309,6 +338,16 @@ class screen():
         self.fileName = "Attendance\\Attendance_" + self.dt + "-" + self.Hour + "-" + self.Minute +"-" + self.Second +".csv"
         self.df_attendence.to_csv(self.fileName,index=False)
         
+        #save attendence in database
+        self.db = pymysql.connect("localhost","root","root","ams")
+        self.cur = self.db.cursor()
+        self.st="insert into attendence (Id,Name,Date,Time)values('%s','%s','%s','%s')"%(self.Id,self.nm,self.date,self.timeStamp)
+        self.cur.execute(self.st)
+        self.db.commit()
+
+        #close database
+        self.db.close()
+    
         #when everthing done, release the capture
         self.cap.release()
         cv2.destroyAllWindows()
