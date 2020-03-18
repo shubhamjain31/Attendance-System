@@ -13,7 +13,7 @@ This project is on facial recognition based Attendance Management System using o
 - OpenCV
 - Pymsql
 
-#Face Recognition Algorithms:
+# Face Recognition Algorithms:
 
 - Haar Cascade
 - LBPH (Local Binary Pattern Histogram)
